@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<modify version="10.4.3_a45545bc0fa864b6dd457e084eb653f6e2004e05">
+    <add generator="gui">
+        <type-metadata>
+            <param name="fully-qualified-name" value="com.example.assignment1.EMS_"/>
+            <param name="type" value="module"/>
+        </type-metadata>
+        <annotations>
+            <annotation name="hygienic"/>
+        </annotations>
+    </add>
+</modify>

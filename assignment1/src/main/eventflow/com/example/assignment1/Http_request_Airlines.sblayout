@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><application-layout>
+    <component name="JDBCTable">
+        <param name="gui:x" value="-487"/>
+        <param name="gui:y" value="-87"/>
+        <param name="gui:width" value="80"/>
+        <param name="gui:height" value="56"/>
+    </component>
+    <component name="Filter">
+        <param name="gui:x" value="-637"/>
+        <param name="gui:y" value="-216"/>
+    </component>
+    <component name="GetWeb">
+        <param name="gui:x" value="-884"/>
+        <param name="gui:y" value="-216"/>
+    </component>
+    <component name="Java">
+        <param name="gui:x" value="-770"/>
+        <param name="gui:y" value="-216"/>
+    </component>
+    <component name="Map">
+        <param name="gui:x" value="-397"/>
+        <param name="gui:y" value="-216"/>
+    </component>
+    <component name="Map2">
+        <param name="gui:x" value="-557"/>
+        <param name="gui:y" value="-216"/>
+    </component>
+    <component name="OutputAdapter">
+        <param name="gui:x" value="-300"/>
+        <param name="gui:y" value="-216"/>
+    </component>
+    <component name="Query">
+        <param name="gui:x" value="-477"/>
+        <param name="gui:y" value="-216"/>
+    </component>
+</application-layout>

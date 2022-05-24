@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<modify version="10.4.3_a45545bc0fa864b6dd457e084eb653f6e2004e05">
+    <add>
+        <annotations>
+            <annotation name="hygienic"/>
+        </annotations>
+        <type-metadata>
+            <param name="type" value="module"/>
+            <param name="fully-qualified-name" value="com.example.assignment1.Sample_module"/>
+        </type-metadata>
+        <memory-model-settings/>
+        <dynamic-variables/>
+        <stream name="InputStream">
+            <schema>
+                <field name="Message" type="string"/>
+            </schema>
+        </stream>
+        <box name="Map" type="map">
+            <input port="1" stream="InputStream"/>
+            <output port="1" stream="out:Map_1"/>
+            <target-list>
+                <item name="input" selection="all"/>
+                <expressions>
+                    <include field="OriginalMessage">"EK25&#13;
+BSM&#13;
+.V/1LSIN&#13;
+.F/EK355/09MAY/DXB/Y&#13;
+.N/0176335029001&#13;
+.S/Y//C/148/148&#13;
+.P/HELLO/FLAVIENMR&#13;
+.Y/EK660891475/B&#13;
+ENDBSM"</include>
+                </expressions>
+            </target-list>
+        </box>
+        <box name="MapCopy" type="map">
+            <input port="1" stream="out:Map_1"/>
+            <output port="1" stream="out:MapCopy_1"/>
+            <target-list>
+                <item name="input" selection="all"/>
+                <expressions>
+                    <include field="Split_message">split(OriginalMessage, '\n')</include>
+                </expressions>
+            </target-list>
+        </box>
+        <box name="Map2" type="map">
+            <input port="1" stream="out:MapCopy_1"/>
+            <output port="1" stream="OutputStream"/>
+            <target-list>
+                <item name="input" selection="all"/>
+                <expressions>
+                    <declare field="Filtered_List">filterlist(Split_message,function myfunc(x string){!contains(x,".P/") and !contains(x,".Y/")})</declare>
+                    <include field="Main_Message">join("\n",Filtered_List)</include>
+                </expressions>
+            </target-list>
+        </box>
+        <output-stream name="OutputStream"/>
+    </add>
+</modify>

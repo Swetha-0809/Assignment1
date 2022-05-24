@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<modify version="10.4.3_a45545bc0fa864b6dd457e084eb653f6e2004e05">
+    <add>
+        <annotations>
+            <annotation name="hygienic"/>
+        </annotations>
+        <type-metadata>
+            <param name="type" value="module"/>
+            <param name="fully-qualified-name" value="com.example.assignment1.Http_request_Airlines"/>
+        </type-metadata>
+        <memory-model-settings/>
+        <dynamic-variables/>
+        <data name="JDBCTable" type="jdbctable">
+            <param name="connection" value="Flights_DB"/>
+        </data>
+        <box name="GetWeb" type="inputadapter">
+            <output port="1" stream="out:GetWeb_1"/>
+            <param name="start:state" value="true"/>
+            <param name="javaclass" value="com.streambase.sb.adapter.webserver.input.WebServerRequest"/>
+            <param name="CommandField" value="Command"/>
+            <param name="ContextPath" value="/request/GET"/>
+            <param name="EnableControlPort" value="false"/>
+            <param name="EnableStatusPort" value="false"/>
+            <param name="FileStoragePath" value=""/>
+            <param name="LogLevel" value="INFO"/>
+            <param name="MultipartFormData" value="false"/>
+            <param name="RequestIdFieldName" value="RequestId"/>
+            <param name="WebSocket" value="false"/>
+            <param name="WebSocketReadDataType" value="String"/>
+            <param name="jsonpCallbackName" value=""/>
+            <param name="parametersSchema" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;schema&gt;&#13;&#10;    &lt;field name=&quot;XMLData&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Value1&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Value2&quot; type=&quot;int&quot;/&gt;&#13;&#10;&lt;/schema&gt;&#13;&#10;"/>
+            <param name="parametersTimestampFormat" value="yyyy-MM-dd HH:mm:ss.SSSZ"/>
+            <param name="requestDataOutgoingFieldName" value="RequestData"/>
+            <param name="requestDataSchema" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;schema/&gt;&#13;&#10;"/>
+            <param name="requestDataTransformerContentTypeMap-key.0" value=".*json.*"/>
+            <param name="requestDataTransformerContentTypeMap-key.1" value=".*xml.*"/>
+            <param name="requestDataTransformerContentTypeMap-key.2" value=".*"/>
+            <param name="requestDataTransformerContentTypeMap-value.0" value="com.streambase.sb.adapter.webserver.data.JSONRequestDataTransformer"/>
+            <param name="requestDataTransformerContentTypeMap-value.1" value="com.streambase.sb.adapter.webserver.data.XMLRequestDataTransformer"/>
+            <param name="requestDataTransformerContentTypeMap-value.2" value="com.streambase.sb.adapter.webserver.data.JSONRequestDataTransformer"/>
+            <param name="requestParameterName" value="Data"/>
+            <param name="webServerConfigElement" value="Web Server Port 8080"/>
+        </box>
+        <box name="Java" type="java">
+            <input port="1" stream="out:GetWeb_1"/>
+            <output port="1" stream="out:Java_1"/>
+            <param name="start:state" value="true"/>
+            <param name="javaclass" value="com.streambase.sb.operator.jsontuple.JSON2Tuple"/>
+            <param name="enableLooseParsing" value="false"/>
+            <param name="enablePassThroughFields" value="true"/>
+            <param name="enableStatusPort" value="false"/>
+            <param name="jsonFieldName" value="Body"/>
+            <param name="logLevel" value="INFO"/>
+            <param name="outputSchema" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;schema&gt;&#13;&#10;    &lt;field name=&quot;Name&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Age&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Source&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Destination&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Airlines&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;dateoftravel&quot; type=&quot;timestamp&quot;/&gt;&#13;&#10;    &lt;field name=&quot;flightno&quot; type=&quot;string&quot;/&gt;&#13;&#10;&lt;/schema&gt;&#13;&#10;"/>
+            <param name="passThroughFieldsFieldName" value="PassThroughFields"/>
+            <param name="timestampFormat" value="MM-dd-yyyy"/>
+        </box>
+        <box name="Filter" type="filter">
+            <input port="1" stream="out:Java_1"/>
+            <output port="1" stream="out:Filter_1"/>
+            <param name="autogen-nomatch-port" value="false"/>
+            <param name="expression.0" value="notnull(input1.Name)"/>
+        </box>
+        <box name="Map2" type="map">
+            <input port="1" stream="out:Filter_1"/>
+            <output port="1" stream="out:Map2_1"/>
+            <target-list>
+                <item name="input" selection="all">
+                    <remove field="Name"/>
+                    <remove field="Age"/>
+                </item>
+                <expressions>
+                    <include field="time_stamp">now()</include>
+                    <include field="flag_processed">true</include>
+                </expressions>
+            </target-list>
+        </box>
+        <box name="Query" type="query">
+            <input port="1" stream="out:Map2_1"/>
+            <output port="1" stream="out:Query_1"/>
+            <dataref id="jdbctable" name="JDBCTable"/>
+            <param name="sql" value="INSERT  INTO flights_data (flight_Source, flight_Destination, flight_Airlines, Travel_Date, Flight_Number,time_stamp,flag_processed)&#13;&#10; VALUES ({input1.Source}, {input1.Destination}, {input1.Airlines}, {input1.dateoftravel}, {input1.flightno},{input1.time_stamp},{input1.flag_processed})"/>
+            <param name="use-callable-statements" value="false"/>
+            <param name="send-null-tuple" value="false"/>
+            <param name="jdbc-output-column" value="0"/>
+            <target-list>
+                <item name="table" selection="none"/>
+                <item name="input" selection="all"/>
+            </target-list>
+            <param name="result-set" value="query"/>
+        </box>
+        <box name="Map" type="map">
+            <input port="1" stream="out:Query_1"/>
+            <output port="1" stream="out:Map_1"/>
+            <target-list>
+                <item name="input" selection="all"/>
+                <expressions>
+                    <include field="Data">"completed successfully"</include>
+                </expressions>
+            </target-list>
+        </box>
+        <box name="OutputAdapter" type="outputadapter">
+            <input port="1" stream="out:Map_1"/>
+            <param name="start:state" value="true"/>
+            <param name="javaclass" value="com.streambase.sb.adapter.webserver.output.WebServerResponse"/>
+            <param name="ContentTypeField" value=""/>
+            <param name="CookiesField" value=""/>
+            <param name="DataField" value="Data"/>
+            <param name="HttpHeadersField" value=""/>
+            <param name="LogLevel" value="INFO"/>
+            <param name="RequestIdField" value="PassThroughFields.RequestId"/>
+            <param name="StatusCodeField" value=""/>
+            <param name="responseDataTransformerAcceptTypeMap-key.0" value=".*json.*"/>
+            <param name="responseDataTransformerAcceptTypeMap-key.1" value=".*xml.*"/>
+            <param name="responseDataTransformerAcceptTypeMap-key.2" value=".*"/>
+            <param name="responseDataTransformerAcceptTypeMap-value.0" value="com.streambase.sb.adapter.webserver.data.JSONResponseDataTransformer"/>
+            <param name="responseDataTransformerAcceptTypeMap-value.1" value="com.streambase.sb.adapter.webserver.data.XMLResponseDataTransformer"/>
+            <param name="responseDataTransformerAcceptTypeMap-value.2" value="com.streambase.sb.adapter.webserver.data.JSONResponseDataTransformer"/>
+        </box>
+    </add>
+</modify>

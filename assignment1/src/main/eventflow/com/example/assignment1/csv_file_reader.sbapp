@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<modify version="10.4.3_a45545bc0fa864b6dd457e084eb653f6e2004e05">
+    <add>
+        <annotations>
+            <annotation name="hygienic"/>
+        </annotations>
+        <type-metadata>
+            <param name="type" value="module"/>
+            <param name="fully-qualified-name" value="com.example.assignment1.csv_file_reader"/>
+        </type-metadata>
+        <memory-model-settings/>
+        <dynamic-variables/>
+        <data name="JDBCTable" type="jdbctable">
+            <param name="connection" value="Flights_DB"/>
+        </data>
+        <box name="InputAdapter2" type="inputadapter">
+            <output port="1" stream="out:InputAdapter2_1"/>
+            <param name="start:state" value="true"/>
+            <param name="javaclass" value="com.streambase.sb.adapter.csvreader.CSVReader"/>
+            <param name="CaptureStrategy" value="FLATTEN"/>
+            <param name="Charset" value=""/>
+            <param name="Delimiter" value=","/>
+            <param name="DiscardEmptyRecords" value="true"/>
+            <param name="EmitTiming" value="Periodic"/>
+            <param name="FileName" value="username.csv"/>
+            <param name="HeaderTypeOption" value="No header"/>
+            <param name="MapControlPort" value="false"/>
+            <param name="NullString" value="null"/>
+            <param name="Period" value=""/>
+            <param name="PreserveWhitespace" value="false"/>
+            <param name="QuoteChar" value="&quot;"/>
+            <param name="Repeat" value=""/>
+            <param name="Schema" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;schema&gt;&#13;&#10;    &lt;field name=&quot;Name&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Age&quot; type=&quot;int&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Source&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Destination&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;Airlines&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;dateoftravel&quot; type=&quot;string&quot;/&gt;&#13;&#10;    &lt;field name=&quot;flightno&quot; type=&quot;string&quot;/&gt;&#13;&#10;&lt;/schema&gt;&#13;&#10;"/>
+            <param name="StartControlPort" value="false"/>
+            <param name="StartEventPort" value="false"/>
+            <param name="TimeBasedEmitField" value=""/>
+            <param name="TimeBasedEmitMode" value="Emission times relative to the first record"/>
+            <param name="TimestampFormat" value="yyyy-MM-dd HH:mm:ss.SSSZ"/>
+            <param name="UseDefaultCharset" value="true"/>
+            <param name="ignoreExistingRecords" value="true"/>
+            <param name="incompleteRecordsMode" value="Populate with nulls"/>
+            <param name="lenientTimestampParsing" value="true"/>
+            <param name="logLevel" value="INFO"/>
+            <param name="logWarningForIncomplete" value="false"/>
+            <param name="readAsResource" value="true"/>
+            <param name="tailMode" value="false"/>
+            <param name="tailUpdateInterval" value="1000"/>
+        </box>
+        <box name="Map2" type="map">
+            <input port="1" stream="out:InputAdapter2_1"/>
+            <output port="1" stream="out:Map2_1"/>
+            <target-list>
+                <item name="input" selection="all">
+                    <remove field="Name"/>
+                    <remove field="Age"/>
+                </item>
+                <expressions>
+                    <include field="time_stamp">now()</include>
+                    <include field="flag_processed">true</include>
+                </expressions>
+            </target-list>
+        </box>
+        <box name="Query" type="query">
+            <input port="1" stream="out:Map2_1"/>
+            <output port="1" stream="OutputStream"/>
+            <dataref id="jdbctable" name="JDBCTable"/>
+            <param name="sql" value="INSERT  INTO flights_data (flight_Source, flight_Destination, flight_Airlines, Travel_Date, Flight_Number,time_stamp,flag_processed)&#13;&#10; VALUES ({input1.Source}, {input1.Destination}, {input1.Airlines}, {input1.dateoftravel}, {input1.flightno},{input1.time_stamp},{input1.flag_processed})"/>
+            <param name="use-callable-statements" value="false"/>
+            <param name="send-null-tuple" value="false"/>
+            <param name="jdbc-output-column" value="0"/>
+            <target-list>
+                <item name="table" selection="none"/>
+                <item name="input" selection="all"/>
+            </target-list>
+            <param name="result-set" value="query"/>
+        </box>
+        <output-stream name="OutputStream"/>
+    </add>
+</modify>

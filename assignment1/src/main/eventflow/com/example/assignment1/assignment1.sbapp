@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<modify version="10.4.3_a45545bc0fa864b6dd457e084eb653f6e2004e05">
+    <add>
+        <annotations>
+            <annotation name="hygienic"/>
+        </annotations>
+        <type-metadata>
+            <param name="type" value="module"/>
+            <param name="fully-qualified-name" value="com.example.assignment1.assignment1"/>
+        </type-metadata>
+        <memory-model-settings/>
+        <named-schemas>
+            <schema name="CSVFileReaderControlSchema">
+                <field name="Filename" type="string"/>
+            </schema>
+            <schema name="CSVFileReaderEventOutputSchema">
+                <field name="Type" type="string"/>
+                <field name="Object" type="string"/>
+                <field name="Action" type="string"/>
+                <field name="Status" type="int"/>
+                <field name="Info" type="string"/>
+            </schema>
+        </named-schemas>
+        <dynamic-variables/>
+        <data name="JDBCTable" type="jdbctable">
+            <param name="connection" value="Flights_DB"/>
+        </data>
+        <stream name="Passenger_Details">
+            <schema>
+                <field name="Name" type="string"/>
+                <field name="Age" type="long"/>
+                <field name="Source" type="string"/>
+                <field name="Destination" type="string"/>
+                <field name="Airlines" type="string"/>
+                <field name="dateoftravel" type="string"/>
+                <field name="flightno" type="string"/>
+            </schema>
+        </stream>
+        <output-stream name="OutputStream"/>
+        <box name="Map2" type="map">
+            <input port="1" stream="Passenger_Details"/>
+            <output port="1" stream="out:Map2_1"/>
+            <target-list>
+                <item name="input" selection="all">
+                    <remove field="Name"/>
+                    <remove field="Age"/>
+                </item>
+                <expressions>
+                    <include field="time_stamp">now()</include>
+                    <include field="flag_processed">true</include>
+                </expressions>
+            </target-list>
+        </box>
+        <box name="Query" type="query">
+            <input port="1" stream="out:Map2_1"/>
+            <output port="1" stream="out:Query_1"/>
+            <dataref id="jdbctable" name="JDBCTable"/>
+            <param name="sql" value="INSERT  INTO flights_data (flight_Source, flight_Destination, flight_Airlines, Travel_Date, Flight_Number,time_stamp,flag_processed)&#13;&#10; VALUES ({input1.Source}, {input1.Destination}, {input1.Airlines}, {input1.dateoftravel}, {input1.flightno},{input1.time_stamp},{input1.flag_processed})"/>
+            <param name="use-callable-statements" value="false"/>
+            <param name="send-null-tuple" value="false"/>
+            <param name="jdbc-output-column" value="0"/>
+            <target-list>
+                <item name="table" selection="none"/>
+                <item name="input" selection="all"/>
+            </target-list>
+            <param name="result-set" value="query"/>
+        </box>
+        <box name="OutputAdapter" type="outputadapter">
+            <input port="1" stream="out:Query_1"/>
+            <output port="1" stream="out:OutputAdapter_1"/>
+            <param name="start:state" value="true"/>
+            <param name="javaclass" value="com.streambase.sb.adapter.liveview.LiveViewPublish"/>
+            <param name="adHoc" value="false"/>
+            <param name="bufferSize" value="100"/>
+            <param name="connectInline" value="false"/>
+            <param name="deleteField" value=""/>
+            <param name="dynamicTableName" value="false"/>
+            <param name="encapsulatingLV" value="false"/>
+            <param name="flushInterval" value="250"/>
+            <param name="logLevel" value="INFO"/>
+            <param name="lvTableName" value=""/>
+            <param name="shareConnection" value="true"/>
+            <param name="strictSchema" value="false"/>
+            <param name="throughPort" value="false"/>
+            <param name="uri" value="lv://localhost"/>
+        </box>
+    </add>
+</modify>

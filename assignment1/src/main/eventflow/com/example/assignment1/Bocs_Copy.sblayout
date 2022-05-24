@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><application-layout>
+    <component name="InputStream">
+        <param name="gui:x" value="-1118"/>
+        <param name="gui:y" value="-99"/>
+    </component>
+    <component name="Map">
+        <param name="gui:x" value="-1400"/>
+        <param name="gui:y" value="-40"/>
+    </component>
+    <component name="Map2">
+        <param name="gui:x" value="-1036"/>
+        <param name="gui:y" value="-99"/>
+    </component>
+    <component name="OutputStream">
+        <param name="gui:x" value="-958"/>
+        <param name="gui:y" value="-99"/>
+    </component>
+</application-layout>
